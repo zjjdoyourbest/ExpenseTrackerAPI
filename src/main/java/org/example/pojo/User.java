@@ -1,31 +1,34 @@
 package org.example.pojo;
 
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.example.util.JsonUtil;
+import org.example.util.Common_until;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class User {
     private int id;
     private String username;
     private String password;
-    private String CreateTime;
-    private String UpdateTime;
+    private String createTime;
+    private String updateTime;
     private boolean lock;
     private boolean isDeleted;
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
 
     public User(){
 
     }
 
     public User(String username, String password) {
-        this.id= JsonUtil.readUserCounts()+1;
+        this.id= JsonUtil.readUserCounts(Common_until.fileName, new TypeReference<List<User>>() {})+1;
         this.username = username;
         this.password = password;
-        this.CreateTime=LocalDateTime.now().format(formatter);
-        this.UpdateTime=LocalDateTime.now().format(formatter);
+        this.createTime=LocalDateTime.now().format(Common_until.formatter1);
+        this.updateTime=LocalDateTime.now().format(Common_until.formatter1);
         this.lock=false;
         this.isDeleted=false;
     }
@@ -55,19 +58,19 @@ public class User {
     }
 
     public String getCreateTime() {
-        return CreateTime;
+        return createTime;
     }
 
     public void setCreateTime(String createTime) {
-        CreateTime = createTime;
+        createTime = createTime;
     }
 
     public String getUpdateTime() {
-        return UpdateTime;
+        return updateTime;
     }
 
     public void setUpdateTime(String updateTime) {
-        UpdateTime = updateTime;
+        updateTime = updateTime;
     }
 
     public boolean isLock() {

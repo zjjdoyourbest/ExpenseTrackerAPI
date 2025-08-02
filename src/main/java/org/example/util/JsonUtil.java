@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 public class JsonUtil {
@@ -37,13 +38,22 @@ public class JsonUtil {
         return path;
     }
 
-    public static <T> void writeJsonFile(T obj,String fileName,TypeReference<List<T>> typeReference){
+    public static <T> boolean writeJsonFile(T obj,String fileName,TypeReference<List<T>> typeReference,int key,Predicate<T> predicate){
         Path path= checkJsonFileExist(fileName);
         File jsonFile=path.toFile();
         List<T> objs= readJsonFile(fileName, typeReference);
+        List<T> before =new ArrayList<>(objs);
         try {
-            objs.add(obj);
+            if(key == 0) //add
+            {
+                objs.add(obj);
+            }else if(key == 1){ // update
+                objs.replaceAll(tempobj -> predicate.test(tempobj) ?obj : tempobj);
+            }else if(key == 2){//delete
+                objs.remove(obj);
+            }
             mapper.writeValue(jsonFile,objs);
+            return !before.equals(objs);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -67,6 +77,10 @@ public class JsonUtil {
 
     public static <T> Optional<T> find(Predicate<T> predicate,String fileName,TypeReference<List<T>> typeReference) {
         return readJsonFile(fileName,typeReference).stream().filter(predicate).findFirst();
+    }
+
+    public static <T> List<T> findList(Predicate<T> predicate,String fileName,TypeReference<List<T>> typeReference) {
+        return readJsonFile(fileName,typeReference).stream().filter(predicate).collect(Collectors.toList());
     }
 
 //    public static User readJsonFileByUsername(String username,TypeReference<List<T>> typeReference){

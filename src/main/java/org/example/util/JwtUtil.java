@@ -35,8 +35,8 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                //.setExpiration(Date.from(Instant.now().plus(Duration.ofHours(2))))
-                .setExpiration(Date.from(Instant.now().plus(Duration.ofMinutes(1))))
+                .setExpiration(Date.from(Instant.now().plus(Duration.ofHours(1))))
+                //.setExpiration(Date.from(Instant.now().plus(Duration.ofMinutes(1))))
                 .signWith(Keys.hmacShaKeyFor(SECRET_KEY.getBytes()), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -51,11 +51,11 @@ public class JwtUtil {
 
             Date expiration =claims.getExpiration();
             Date issuedAt =claims.getIssuedAt();
-            System.out.println("expiration : "+ expiration.getTime());
-            System.out.println("issuedAt : "+issuedAt.getTime());
-            return ((expiration.getTime()-issuedAt.getTime())>0);
+//            System.out.println("expiration : "+ expiration.getTime());
+//            System.out.println("issuedAt : "+issuedAt.getTime());
+            return ((expiration.getTime()-issuedAt.getTime())<0);
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            return true;
         }
     }
 

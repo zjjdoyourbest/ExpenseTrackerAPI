@@ -58,8 +58,12 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("username or password cannot be empty");
             }else {
                 User user =new User(username,password);
-                JsonUtil.writeJsonFile(user, Common_until.fileName, new TypeReference<List<User>>() {});
-                return ResponseEntity.ok("user add successful. now you can login with your username and password.");
+                boolean result = JsonUtil.writeJsonFile(user, Common_until.fileName, new TypeReference<List<User>>() {},0,null);
+                if (result) {
+                    return ResponseEntity.ok("user add successful. now you can login with your username and password.");
+                }else {
+                    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("user add failed. please contract system admin");
+                }
             }
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Parameter is incorrect");

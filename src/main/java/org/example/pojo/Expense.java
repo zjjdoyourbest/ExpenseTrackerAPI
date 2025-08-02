@@ -1,9 +1,15 @@
 package org.example.pojo;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.example.requestBody.ExpenseRequest;
 import org.example.util.Common_until;
+import org.example.util.JsonUtil;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Objects;
 
 public class Expense {
     private int id;
@@ -18,16 +24,16 @@ public class Expense {
     public Expense() {
     }
 
-//    public Expense(ExpenseRequest expenseRequest) {
-//        this.id=todo;
-//        this.type_id = expenseRequest.getType_id();
-//        this.type_name=?;
-//        this.amount = expenseRequest.getAmount();
-//        this.detial = expenseRequest.getDetial();
-//        this.expensedate = expenseRequest.getExpensedate();
-//        this.createTime = LocalDateTime.now().format(Common_until.formatter1);
-//        this.updateTime = LocalDateTime.now().format(Common_until.formatter1);
-//    }
+    public Expense(ExpenseRequest expenseRequest) {
+        this.id= JsonUtil.readUserCounts(Common_until.expense_fileName, new TypeReference<List<Expense>>() {}) +1;
+        this.type_id = expenseRequest.getType_id();
+        this.type_name=Common_until.typeMap.get(expenseRequest.getType_id());
+        this.amount = expenseRequest.getAmount();
+        this.detial = expenseRequest.getDetail();
+        this.expensedate = LocalDate.parse(expenseRequest.getExpensedate()).format(Common_until.formatter2) ;
+        this.createTime = LocalDateTime.now().format(Common_until.formatter1);
+        this.updateTime = LocalDateTime.now().format(Common_until.formatter1);
+    }
 
     public int getId() {
         return id;
@@ -91,5 +97,19 @@ public class Expense {
 
     public void setUpdateTime(String updateTime) {
         this.updateTime = updateTime;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Expense)) return false;
+        Expense expense =(Expense) obj;
+        return  Objects.equals(this.id,expense.id)&&
+                Objects.equals(this.amount,expense.amount)&&
+                Objects.equals(this.detial,expense.detial)&&
+                Objects.equals(this.expensedate,expense.expensedate)&&
+                Objects.equals(this.type_id,expense.type_id)&&
+                Objects.equals(this.type_name,expense.type_name)
+                ;
     }
 }

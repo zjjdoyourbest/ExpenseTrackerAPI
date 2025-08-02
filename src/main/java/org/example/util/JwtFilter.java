@@ -46,6 +46,8 @@ public class JwtFilter extends OncePerRequestFilter {
             response.getWriter().write("Missing Authorization header");
             return;
         }
+
+
         filterChain.doFilter(request, response);
     }
 }

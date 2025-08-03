@@ -106,10 +106,10 @@ public class ExpenseTrackerController {
 
     @PostMapping("list")
     public ResponseEntity<?> listExpense(@RequestBody ExpenseRequest expenseRequest){
-        if(expenseRequest.getNum()!=null && expenseRequest.getUnit()!=null){
+        Predicate<Expense> predicate;
+        if(expenseRequest.getNum()!=null && expenseRequest.getUnit()!=null && expenseRequest.getListCondition()!=null){
             LocalDateTime now =LocalDateTime.now();
             LocalDateTime after;
-            Predicate<Expense> predicate;
             switch (expenseRequest.getUnit()){
                 case DAY : after=now.minusDays(expenseRequest.getNum()); break;
                 case YEAR: after=now.minusYears(expenseRequest.getNum()); break;
@@ -150,7 +150,35 @@ public class ExpenseTrackerController {
                 return ResponseEntity.ok("this is no data for your search condition");
             }
             return ResponseEntity.ok(expenses);
-        }else {
+        }else if(expenseRequest.getStartDate()!=null && expenseRequest.getEndDate()!=null&& expenseRequest.getListCondition()!=null){
+            LocalDate startDate=LocalDate.parse(expenseRequest.getStartDate(),Common_until.formatter2);
+            LocalDate endDate=LocalDate.parse(expenseRequest.getEndDate(),Common_until.formatter2);
+            if(startDate.isAfter(endDate)){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("the endDate should be than than the startDate.");
+            }else {
+                switch (expenseRequest.getListCondition()){
+                    case EXPENSE_TIME :
+                        predicate= e -> (LocalDate.parse(e.getExpensedate(),Common_until.formatter2).isAfter(startDate)||LocalDate.parse(e.getExpensedate(),Common_until.formatter2).isEqual(startDate))&&
+                                (LocalDate.parse(e.getExpensedate(),Common_until.formatter2).isBefore(endDate)||LocalDate.parse(e.getExpensedate(),Common_until.formatter2).isEqual(endDate));
+                        break;
+                    case CREATE_TIME:
+                        predicate= e -> (LocalDate.parse(e.getCreateTime(),Common_until.formatter2).isAfter(startDate)||LocalDate.parse(e.getCreateTime(),Common_until.formatter2).isEqual(startDate))&&
+                                (LocalDate.parse(e.getCreateTime(),Common_until.formatter2).isBefore(endDate)||LocalDate.parse(e.getCreateTime(),Common_until.formatter2).isEqual(endDate));
+                        break;
+                    case UPDATE_TIME:
+                        predicate= e -> (LocalDate.parse(e.getUpdateTime(),Common_until.formatter2).isAfter(startDate)||LocalDate.parse(e.getUpdateTime(),Common_until.formatter2).isEqual(startDate))&&
+                                (LocalDate.parse(e.getUpdateTime(),Common_until.formatter2).isBefore(endDate)||LocalDate.parse(e.getUpdateTime(),Common_until.formatter2).isEqual(endDate));
+                        break;
+                    default:
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("you can only use "+ListCondition.values());
+                }
+                List<Expense> expenses = JsonUtil.findList(predicate, Common_until.expense_fileName, new TypeReference<List<Expense>>() {});
+                if (expenses.isEmpty()){
+                    return ResponseEntity.ok("this is no data for your search condition");
+                }
+                return ResponseEntity.ok(expenses);
+            }
+        } else {
             List<Expense> optionalExpense= JsonUtil.readJsonFile(Common_until.expense_fileName, new TypeReference<List<Expense>>() {});
             return ResponseEntity.ok(optionalExpense);
         }

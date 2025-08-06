@@ -1,11 +1,12 @@
 package org.example.controller;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.example.pojo.User;
+import org.example.service.UserService;
+import org.example.type.User;
 import org.example.requestBody.LoginRequest;
 import org.example.util.Common_until;
-import org.example.util.JsonUtil;
 import org.example.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,8 @@ public class AuthController {
     private JwtUtil jwtUtil=new JwtUtil();
     private String username;
     private String password;
-
+    @Autowired
+    private UserService userService;
 
     public AuthController() throws IOException {
 
@@ -34,11 +36,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        Optional<User> optional = JsonUtil.<User>find(u -> request.getUsername().equals(u.getUsername()), Common_until.fileName, new TypeReference<List<User>>() {});
-        if(optional.isPresent()){
-            username=optional.get().getUsername();
-            password=optional.get().getPassword();
-        // 实际应用中应校验用户名密码
+        User user =userService.getUserByName(request.getUsername());
+
+        if(user != null){
+            username=user.getUsername();
+            password=user.getPassword();
+
             if (username.equals(request.getUsername()) && password.equals(request.getPassword())) {
                 String token = JwtUtil.generateToken(request.getUsername());
                 return ResponseEntity.ok(Collections.singletonMap("token", token));
@@ -58,8 +61,8 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("username or password cannot be empty");
             }else {
                 User user =new User(username,password);
-                boolean result = JsonUtil.writeJsonFile(user, Common_until.fileName, new TypeReference<List<User>>() {},0,null);
-                if (result) {
+                Integer result= userService.addUser(user);
+                if (result == 1) {
                     return ResponseEntity.ok("user add successful. now you can login with your username and password.");
                 }else {
                     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("user add failed. please contract system admin");

@@ -3,40 +3,59 @@ package org.example.requestBody;
 import org.example.emun.ListCondition;
 import org.example.emun.Unit;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
 public class ExpenseRequest {
     private Integer id;
     private Integer type_id;
-    private Double amount;
+    private BigDecimal amount;
     private String detail;
-    private String expensedate;
+    private LocalDate expensedate;
     private Unit unit;
     private Integer num;
     private ListCondition listCondition;
     private String startDate;
     private String endDate;
 
-    public String getStartDate() {
-        return startDate;
+    public Integer getId() {
+        return id;
     }
 
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public String getEndDate() {
-        return endDate;
+    public Integer getType_id() {
+        return type_id;
     }
 
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
+    public void setType_id(Integer type_id) {
+        this.type_id = type_id;
     }
 
-    public ListCondition getListCondition() {
-        return listCondition;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
-    public void setListCondition(ListCondition listCondition) {
-        this.listCondition = listCondition;
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getDetail() {
+        return detail;
+    }
+
+    public void setDetail(String detail) {
+        this.detail = detail;
+    }
+
+    public LocalDate getExpensedate() {
+        return expensedate;
+    }
+
+    public void setExpensedate(LocalDate expensedate) {
+        this.expensedate = expensedate;
     }
 
     public Unit getUnit() {
@@ -55,43 +74,27 @@ public class ExpenseRequest {
         this.num = num;
     }
 
-    public Integer getId() {
-        return id;
+    public ListCondition getListCondition() {
+        return listCondition;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setListCondition(ListCondition listCondition) {
+        this.listCondition = listCondition;
     }
 
-    public Integer getType_id() {
-        return type_id;
+    public String getStartDate() {
+        return startDate;
     }
 
-    public void setType_id(Integer type_id) {
-        this.type_id = type_id;
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
     }
 
-    public Double getAmount() {
-        return amount;
+    public String getEndDate() {
+        return endDate;
     }
 
-    public void setAmount(Double amount) {
-        this.amount = amount;
-    }
-
-    public String getDetail() {
-        return detail;
-    }
-
-    public void setDetail(String detail) {
-        this.detail = detail;
-    }
-
-    public String getExpensedate() {
-        return expensedate;
-    }
-
-    public void setExpensedate(String expensedate) {
-        this.expensedate = expensedate;
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
     }
 }
